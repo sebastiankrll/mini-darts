@@ -43,23 +43,9 @@ const moveCursor = (e) => {
     cursorDiv.style.top = throwY + 80 + 'px'
 }
 
-// setInterval(() => {
-//     if (prevEvent && currentEvent) {
-//         let mousex = currentEvent.screenX - prevEvent.screenX
-//         let mousey = currentEvent.screenY - prevEvent.screenY
-
-//         mouseSpeedX = 20 * mousex
-//         mouseSpeedY = 20 * mousey
-//     }
-//     prevEvent = currentEvent
-// }, 50)
-
-const dartDown = () => {
-    throwStatus = false
-}
-
 const dartUp = () => {
     throwStatus = true
+    cursorDiv.style.display = "none"
     flyingDartsDiv[currentRound].style.display = 'block'
     animateDart()
 }
@@ -79,7 +65,6 @@ const animateDart = () => {
             flyingDartsDiv[currentRound].style.backgroundImage = 'url(../images/darts/dart_5.png)'
             flyingDartsDiv[currentRound].style.width = _dartScales[4] + 'rem'
 
-            throwStatus = false
             getThrow()
         } else {
             throwY += throwSpeedY * _i / 100 * Math.sin(0.8) + 10 / 2 * Math.pow(_i / 35, 2)
@@ -199,6 +184,9 @@ const getThrow = () => {
     currentRound++
     if (currentRound > 2) {
         roundTimeout = setTimeout(resetRound, 2000)
+    } else {
+        throwStatus = false
+        cursorDiv.style.display = "block"
     }
 }
 
@@ -251,6 +239,8 @@ const calculateAverage = () => {
 
 const resetRound = () => {
     currentRound = 0
+    throwStatus = false
+    cursorDiv.style.display = "block"
 
     counterScoresDiv.forEach(span => {
         span.innerHTML = '--'

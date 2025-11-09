@@ -56,13 +56,13 @@
         </div>
         <div id="restart" onclick="restartGame()">New Game</div>
     </div>
-    <div id="playzone" onmousedown="dartDown()" onmouseup="dartUp()" onmousemove="moveCursor(event)">
+    <div id="playzone" onmouseup="dartUp()" onmousemove="moveCursor(event)">
         <div id="game-status">Player 1</div>
-        <div id="dartboard"></div>
-        <div class="flying-dart"></div>
-        <div class="flying-dart"></div>
-        <div class="flying-dart"></div>
-        <div id="cursor"></div>
+        <div id="dartboard" draggable="false"></div>
+        <div class="flying-dart" draggable="false"></div>
+        <div class="flying-dart" draggable="false"></div>
+        <div class="flying-dart" draggable="false"></div>
+        <div id="cursor" draggable="false"></div>
     </div>
     <script src="js/darts.js"></script>
 </body>
