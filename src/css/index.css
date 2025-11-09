@@ -22,7 +22,22 @@ body {
 
 body {
     font-family: 'Manrope', sans-serif;
-    background: var(--main-main-color);
     color: white;
+    background: var(--main-main-color);
     display: flex;
+    flex-flow: column;
+}
+
+section {
+    display: flex;
+    flex: 1;
+    background: var(--main-main-color);
+}
+
+#menu footer p {
+    font-size: .7rem;
+}
+
+a {
+    color: inherit;
 }

@@ -7,16 +7,17 @@ const counterScoresDiv = document.querySelectorAll('#score-counter span')
 const averageScoresDiv = document.querySelectorAll('#score-average span')
 const flyingDartsDiv = document.querySelectorAll('.flying-dart')
 const staticDartsDiv = document.querySelectorAll('.dart')
-// const congrats = document.querySelector('.congrats')
 const helpInfoDiv = document.getElementById('help-info')
 const gameStatusDiv = document.getElementById('game-status')
+
+const scoreModes = [301, 501, 701]
 
 let roundTimeout = null
 let currentPlayer = 0
 let doubleMode = false
 let scores = [301]
-let avgScores = [0]
-let throws = [0, 0, 0]
+let tempScore = 301
+let throws = [[]]
 let throwStatus = false
 let throwX = 0
 let throwY = 0
@@ -25,11 +26,13 @@ let throwSpeedY = 0
 let overallRound = 0
 let currentRound = 0
 let throwSum = 0
+let scoreModeIndex = 0
+let isFullscreen = false
 
 const moveCursor = (e) => {
     if (throwStatus) return
 
-    const _rectZone = playzoneDiv.getBoundingClientRect()
+    const _rectZone = dartboardDiv.getBoundingClientRect()
     const _x = e.clientX - _rectZone.left
     const _y = e.clientY - _rectZone.top
 
@@ -43,25 +46,14 @@ const moveCursor = (e) => {
     cursorDiv.style.top = throwY + 80 + 'px'
 }
 
-// setInterval(() => {
-//     if (prevEvent && currentEvent) {
-//         let mousex = currentEvent.screenX - prevEvent.screenX
-//         let mousey = currentEvent.screenY - prevEvent.screenY
-
-//         mouseSpeedX = 20 * mousex
-//         mouseSpeedY = 20 * mousey
-//     }
-//     prevEvent = currentEvent
-// }, 50)
-
-const dartDown = () => {
-    throwStatus = false
-}
-
 const dartUp = () => {
-    throwStatus = true
-    flyingDartsDiv[currentRound].style.display = 'block'
-    animateDart()
+    if (!throwStatus) {
+        throwStatus = true
+        staticDartsDiv[currentRound].style.visibility = "hidden"
+        cursorDiv.style.display = "none"
+        flyingDartsDiv[currentRound].style.display = 'block'
+        animateDart()
+    }
 }
 
 const animateDart = () => {
@@ -79,7 +71,6 @@ const animateDart = () => {
             flyingDartsDiv[currentRound].style.backgroundImage = 'url(../images/darts/dart_5.png)'
             flyingDartsDiv[currentRound].style.width = _dartScales[4] + 'rem'
 
-            throwStatus = false
             getThrow()
         } else {
             throwY += throwSpeedY * _i / 100 * Math.sin(0.8) + 10 / 2 * Math.pow(_i / 35, 2)
@@ -111,8 +102,8 @@ const calculateThrownValue = () => {
     const _bullr = 0.119
     const _scoreOrder = [6, 13, 4, 18, 1, 20, 5, 12, 9, 14, 11, 8, 16, 7, 19, 3, 17, 2, 15, 10]
 
-    const _x = throwX / playzoneDiv.offsetWidth - _cx
-    const _y = -(throwY / playzoneDiv.offsetHeight - _cy)
+    const _x = throwX / dartboardDiv.offsetWidth - _cx
+    const _y = -(throwY / dartboardDiv.offsetHeight - _cy)
     let _phi = Math.atan(_y / _x) * 180 / Math.PI
 
     if (_x < 0) { _phi += 180 }
@@ -162,52 +153,60 @@ const calculateThrownValue = () => {
 const getThrow = () => {
     const _throw = calculateThrownValue()
 
-    staticDartsDiv[currentRound].style.visibility = "hidden"
     counterScoresDiv[currentRound].innerHTML = _throw.value
     throwSum += _throw.value
     counterScoresDiv[3].innerHTML = `(${throwSum})`
+    throws[currentPlayer].push(_throw.value)
 
-    const _newScore = scores[currentPlayer] - _throw.value
+    tempScore -= _throw.value
 
     // Overthrown
-    if (_newScore < 0) {
+    if (tempScore < 0) {
         setBusted()
         return
     }
 
     // Single-out throw in double mode
-    if (_newScore == 0 && doubleMode && !_throw.isDouble) {
+    if (tempScore == 0 && doubleMode && !_throw.isDouble) {
         setBusted()
         return
     }
 
     // Exception: Only 1 left in double mode
-    if (_newScore == 1 && doubleMode) {
+    if (tempScore == 1 && doubleMode) {
         setBusted()
         return
     }
 
-    throws[currentRound] = _throw.value
-    totalScoresDiv[currentPlayer].innerHTML = _newScore
+    const _average = getAverage()
+    averageScoresDiv[currentPlayer].innerHTML = _average.toFixed(2)
+    totalScoresDiv[currentPlayer].innerHTML = tempScore
 
     // Win scenarios
-    if (_newScore == 0) {
+    if (tempScore == 0) {
         setWon()
         return
     }
 
     currentRound++
     if (currentRound > 2) {
-        roundTimeout = setTimeout(resetRound, 2000)
+        scores[currentPlayer] = tempScore
+        console.log(throws)
+        roundTimeout = setTimeout(advanceRound, 2000)
+    } else {
+        throwStatus = false
+        cursorDiv.style.display = "block"
     }
 }
 
 const setBusted = () => {
-    counterScoresDiv.childNodes[3].style.color = 'var(--main-red-color)'
+    totalScoresDiv[currentPlayer].innerHTML = scores[currentPlayer]
+
     totalScoresDiv[currentPlayer].style.color = 'var(--main-red-color)'
     gameStatusDiv.style.color = 'var(--main-red-color)'
     gameStatusDiv.innerHTML = "Busted!"
-    roundTimeout = setTimeout(resetRound, 2000)
+
+    roundTimeout = setTimeout(advanceRound, 2000)
 }
 
 const setWon = () => {
@@ -216,45 +215,31 @@ const setWon = () => {
     gameStatusDiv.innerHTML = "Player " + (currentPlayer + 1) + " wins!"
 }
 
-const calculateAverage = () => {
-    const _previousThrows = overallRound * 3
-    const _currentSum = throws.reduce((a, b) => a + b, 0)
-    const _remainingThrows = 2 - currentRound
+const getAverage = () => {
+    if (throws[currentPlayer].length === 0) return 0
 
-    let _predictedThrows = []
+    const _sums = []
 
-    if (_remainingThrows > 0) {
-        const _predictedValue = currentRound === 0 ? currentThrows[0] : sumCurrent / (currentRound + 1)
-        _predictedThrows = Array(_remainingThrows).fill(_predictedValue)
+    for (let i = 0; i < throws[currentPlayer].length; i += 3) {
+        const _chunk = throws[currentPlayer].slice(i, i + 3)
+        const _sum = _chunk.reduce((a, b) => a + b, 0)
+        _sums.push(_sum)
     }
 
-    const _predictedSum = _currentSum + _predictedThrows.reduce((a, b) => a + b, 0)
-
-    const _newAverage =
-        ((avgScores[currentPlayer] * totalPreviousThrows) + predictedSum) /
-        (totalPreviousThrows + throwsPerRound);
-
-    return {
-        predictedThrows,
-        predictedSum,
-        predictedOverallAverage: newAverage,
-    };
-
-    if (rounds > 0) {
-        avgscore[currentPlayer] = scores[currentPlayer].reduce((accumulator, currentValue) => accumulator + currentValue, 0) / rounds
-    } else {
-        avgscore[currentPlayer] = scores[currentPlayer].reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-    }
-
-    averageScoresDiv[currentPlayer].innerHTML = avgscore[currentPlayer].toFixed(2)
+    const _total = _sums.reduce((a, b) => a + b, 0)
+    return _total / _sums.length
 }
 
 const resetRound = () => {
     currentRound = 0
+    throwSum = 0
+    throwStatus = false
+    cursorDiv.style.display = "block"
 
     counterScoresDiv.forEach(span => {
         span.innerHTML = '--'
     })
+    counterScoresDiv[3].innerHTML = "(--)"
     staticDartsDiv.forEach(dart => {
         dart.style.visibility = "visible"
     })
@@ -262,21 +247,27 @@ const resetRound = () => {
         arrowflys.style.display = "none"
     })
 
-    counterScoresDiv[2].style.color = 'white'
+    gameStatusDiv.style.color = 'white'
+    gameStatusDiv.innerHTML = "Player " + (currentPlayer + 1)
+}
+
+const advanceRound = () => {
     totalScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
     averageScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
-    totalScoresDiv[currentPlayer].innerHTML = scores[currentPlayer]
 
     currentPlayer++
-    if (currentPlayer == scores.length) {
+    if (currentPlayer >= scores.length) {
         currentPlayer = 0
         overallRound++
         overallRoundDiv.innerHTML = overallRound + 1
     }
 
-    throwSum = 0
-    gameStatusDiv.style.color = 'white'
-    gameStatusDiv.innerHTML = "Player " + (currentPlayer + 1)
+    tempScore = scores[currentPlayer]
+
+    totalScoresDiv[currentPlayer].style.color = 'white'
+    averageScoresDiv[currentPlayer].style.color = 'white'
+
+    resetRound()
 }
 
 
@@ -284,99 +275,79 @@ const resetRound = () => {
 
 const restartGame = () => {
     clearTimeout(roundTimeout)
-
-    rounds = 0
     resetRound()
 
-    totalScoresDiv.forEach(info => {
-        info.innerHTML = scoreModeToggle.innerHTML
-        info.style.color = 'rgb(130, 130, 130)'
+    throws = Array.from({ length: scores.length }, () => [])
+
+    overallRoundDiv.innerHTML = 1
+    currentPlayer = 0
+    overallRound = 0
+
+    scores.fill(scoreModes[scoreModeIndex])
+    tempScore = scoreModes[scoreModeIndex]
+
+    totalScoresDiv.forEach(span => {
+        span.innerHTML = scoreModes[scoreModeIndex]
+        span.style.color = 'rgb(130, 130, 130)'
     })
-    for (var i = 0; i < score.length; i++) {
-        score[i] = scoreModeToggle.innerHTML
-        avgscore[i] = 0
-        scores[i] = [0]
-    }
     totalScoresDiv[0].style.color = 'white'
-    currentRoundDiv.innerHTML = 1
-    averageScoresDiv.forEach(info => {
-        info.innerHTML = '--'
-        info.style.color = 'rgb(130, 130, 130)'
+
+    averageScoresDiv.forEach(span => {
+        span.innerHTML = '--'
+        span.style.color = 'rgb(130, 130, 130)'
     })
     averageScoresDiv[0].style.color = 'white'
-    currentPlayer = 0
 }
 
-function help() {
-    if (helpInfoDiv.style.display == "block") {
-        helpInfoDiv.style.display = "none";
+const openHelp = (element) => {
+    element.innerHTML = helpInfoDiv.style.display === "block" ? "Help" : "Close"
+    helpInfoDiv.style.display = helpInfoDiv.style.display === "block" ? "none" : "block"
+}
+
+const toggleFullscreen = (element) => {
+    const section = document.querySelector('section')
+    isFullscreen = !isFullscreen
+
+    if (isFullscreen) {
+        element.innerHTML = "Normal Screen"
+        section.requestFullscreen()
     } else {
-        helpInfoDiv.style.display = "block";
+        element.innerHTML = "Fullscreen"
+        document.exitFullscreen()
     }
 }
 
-var screenToggle = document.querySelector('.fullscreen');
-var dartSection = document.querySelector('section');
-var screenMode = false;
+const changeScoreMode = (element) => {
+    scoreModeIndex = (scoreModeIndex + 1) % 3
+    element.innerHTML = scoreModes[scoreModeIndex]
+    restartGame()
+}
 
-function fullscreen() {
-    screenMode = !screenMode;
-    if (screenMode) {
-        if (screenToggle.requestFullscreen) {
-            dartSection.requestFullscreen();
-        } else if (screenToggle.webkitRequestFullscreen) {
-            dartSection.webkitRequestFullscreen();
-        } else if (screenToggle.msRequestFullscreen) {
-            dartSection.msRequestFullscreen();
+const changeGameMode = (element) => {
+    doubleMode = !doubleMode
+    element.innerHTML = doubleMode ? 'Double Out' : 'Single Out'
+    restartGame()
+}
+
+const changePlayerCount = (element) => {
+    if (scores.length < 3) {
+        scores.push(301)
+
+        totalScoresDiv[scores.length - 1].style.display = "block"
+        totalScoresDiv[scores.length - 1].style.color = "rgb(130, 130, 130)"
+        averageScoresDiv[scores.length - 1].style.display = "block"
+        averageScoresDiv[scores.length - 1].style.color = "rgb(130, 130, 130)"
+
+        element.innerHTML = `${scores.length}x Player(s)`
+    } else {
+        for (let i = 1; i < scores.length; i++) {
+            totalScoresDiv[i].style.display = "none"
+            averageScoresDiv[i].style.display = "none"
         }
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
+
+        scores = [301]
+        element.innerHTML = "1x Player(s)"
     }
-}
 
-var scoreModes = [301, 501, 701];
-var scoreIdx = 1;
-var scoreModeToggle = document.querySelector('.score-mode');
-
-function scoreMode() {
-    scoreModeToggle.innerHTML = scoreModes[scoreIdx];
-    restartGame();
-    scoreIdx++;
-    if (scoreIdx > 2) {
-        scoreIdx = 0;
-    }
-}
-
-var gameModeToggle = document.querySelector('.game-mode');
-
-
-function gameMode() {
-    restartGame();
-    gameModes = !gameModes;
-    gameModeToggle.innerHTML = gameModeToggle.innerHTML == 'Single Out' ? 'Double Out' : 'Single Out';
-}
-
-function playerMode() {
-    restartGame();
-    if (score.length < 2) {
-        score.push(301);
-        avgscore.push(0);
-        scores.push([0]);
-        totalScoresDiv[score.length - 1].style.display = "block";
-        totalScoresDiv[score.length - 1].style.color = "rgb(130, 130, 130)";
-        averageScoresDiv[score.length - 1].style.display = "block";
-        averageScoresDiv[score.length - 1].style.color = "rgb(130, 130, 130)";
-    } else {
-        score.pop();
-        avgscore.pop();
-        scores.pop();
-        totalScoresDiv[score.length].style.display = "none";
-        averageScoresDiv[score.length].style.display = "none";
-    }
+    restartGame()
 }

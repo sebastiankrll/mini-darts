@@ -1,4 +1,5 @@
 #menu {
+    position: relative;
     display: flex;
     flex-flow: column;
     background: var(--main-maindark-color);
@@ -13,38 +14,58 @@
     font-size: 1.5rem;
 }
 
-.menu-settings {
+.menu-toggles {
     position: relative;
     display: flex;
+    gap: .5rem;
 }
 
-.menu-setting {
+.menu-toggle {
     position: relative;
     display: flex;
     align-items: center;
-    width: fit-content;
-    height: .5rem;
-    color: var(--main-blue-color);
-    margin: .5rem;
     cursor: pointer;
+    color: white;
+    border: 1px solid var(--main-blue-color);
     font-size: .7rem;
+    padding: 0.2rem .5rem;
+    border-radius: 3px;
+    user-select: none;
 }
+
+.game-modes {
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    width: 100%;
+    gap: .5rem;
+}
+
+.game-mode {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: .5rem;
+    background: var(--main-main-color);
+    border-radius: 5px;
+    user-select: none;
+}
+
 
 #help-info {
     position: absolute;
-    top: 0;
-    left: 100%;
-    width: 20rem;
-    height: fit-content;
-    background: var(--main-blue-color);
-    color: var(--main-maindark-color);
-    border-radius: 5px;
-    margin: .5rem;
-    font-size: .8rem;
-    padding: .5rem;
-    transition: .3s;
     display: none;
     z-index: 1;
+    left: 100%;
+    width: 30rem;
+    background: var(--main-blue-color);
+    color: var(--main-maindark-color);
+    padding: 1rem;
+    padding-left: 2rem;
+    margin-left: 1rem;
+    border-radius: 5px;
 }
 
 .scores {
@@ -57,6 +78,10 @@
 
 .scores span {
     margin: 0 0.5rem;
+}
+
+#score-total {
+    font-size: 1.5rem;
 }
 
 #darts {
@@ -75,14 +100,18 @@
 
 #restart {
     background-color: var(--main-blue-color);
-    width: 100%;
     color: var(--main-maindark-color);
+    width: 100%;
     border-radius: 5px;
-    padding: auto;
-    text-align: center;
+    padding: .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.5rem;
     margin-top: 1rem;
     cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;
 }
 
 #playzone {
@@ -105,8 +134,8 @@
 #dartboard {
     background: url("../images/darts/dartboard.png") no-repeat center center;
     background-size: contain;
-    width: 30rem;
-    height: 30rem;
+    width: 35rem;
+    height: 35rem;
     margin: auto;
     position: relative;
 }
