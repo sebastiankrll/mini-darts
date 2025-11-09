@@ -312,12 +312,9 @@ const restartGame = () => {
     averageScoresDiv[0].style.color = 'white'
 }
 
-function openHelp() {
-    if (helpInfoDiv.style.display == "block") {
-        helpInfoDiv.style.display = "none";
-    } else {
-        helpInfoDiv.style.display = "block";
-    }
+const openHelp = (element) => {
+    element.innerHTML = helpInfoDiv.style.display === "block" ? "Help" : "Close"
+    helpInfoDiv.style.display = helpInfoDiv.style.display === "block" ? "none" : "block"
 }
 
 const toggleFullscreen = (element) => {

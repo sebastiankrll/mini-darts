@@ -13,8 +13,15 @@
 <body>
     <section>
         <div id="menu">
+            <div id="help-info">
+                <ol>
+                    <li>Hold down the left mouse button to pick up a dart.</li>
+                    <li>Move the mouse across the screen from the bottom towards the dartboard and then release the left mouse button to throw the dart.</li>
+                    <li>The faster you swipe, the higher the dart will fly. Swiping slowly may cause the dart to drop below the board, and vice versa.</li>
+                </ol> 
+            </div>
             <div class="menu-settings">
-                <div class="menu-setting" onclick="help()">Help</div>
+                <div class="menu-setting" onclick="openHelp(this)">Help</div>
                 <div class="menu-setting" onclick="toggleFullscreen(this)">Fullscreen</div>
             </div>
             <div class="menu-settings">
@@ -22,13 +29,6 @@
                 <div class="menu-setting" onclick="changePlayerCount(this)">1x Player(s)</div>
                 <div class="menu-setting" onclick="changeGameMode(this)">Single Out</div>
             </div>  
-            <div id="help-info">
-                <ol>
-                    <li>Press and hold the left mouse button to take a dart.</li>
-                    <li>Swipe up the mouse and release the left mouse button to throw the dart.</li>
-                </ol> 
-                <br>Tip: The dart will fly higher, if you swipe fast. Swiping slowly may cause the dart to drop.
-            </div>
             <p>Round</p>
             <div class="scores" id="score-round">1</div>
             <p>Score</p>

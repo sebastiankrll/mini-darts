@@ -1,4 +1,5 @@
 #menu {
+    position: relative;
     display: flex;
     flex-flow: column;
     background: var(--main-maindark-color);
@@ -32,19 +33,16 @@
 
 #help-info {
     position: absolute;
-    top: 0;
-    left: 100%;
-    width: 20rem;
-    height: fit-content;
-    background: var(--main-blue-color);
-    color: var(--main-maindark-color);
-    border-radius: 5px;
-    margin: .5rem;
-    font-size: .8rem;
-    padding: .5rem;
-    transition: .3s;
     display: none;
     z-index: 1;
+    left: 100%;
+    width: 30rem;
+    background: var(--main-blue-color);
+    color: var(--main-maindark-color);
+    padding: 1rem;
+    padding-left: 2rem;
+    margin-left: 1rem;
+    border-radius: 5px;
 }
 
 .scores {
