@@ -28,12 +28,12 @@ jobs:
 
       - name: Copy files to VM
         run: |
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no" . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/katharina-luisa
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/mini-darts
 
       - name: Deploy on VM
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd /opt/katharina-luisa
+            cd /opt/mini-darts
             
             docker compose down
             docker compose -f docker-compose.prod.yml pull || true
