@@ -26,10 +26,16 @@ let overallRound = 0
 let currentRound = 0
 let throwSum = 0
 
+const log = (e) => {
+    const _rectZone = dartboardDiv.getBoundingClientRect()
+    const _x = (e.clientX - _rectZone.left) / dartboardDiv.offsetWidth
+    const _y = (e.clientY - _rectZone.top) / dartboardDiv.offsetHeight
+}
+
 const moveCursor = (e) => {
     if (throwStatus) return
 
-    const _rectZone = playzoneDiv.getBoundingClientRect()
+    const _rectZone = dartboardDiv.getBoundingClientRect()
     const _x = e.clientX - _rectZone.left
     const _y = e.clientY - _rectZone.top
 
@@ -44,10 +50,12 @@ const moveCursor = (e) => {
 }
 
 const dartUp = () => {
-    throwStatus = true
-    cursorDiv.style.display = "none"
-    flyingDartsDiv[currentRound].style.display = 'block'
-    animateDart()
+    if (!throwStatus) {
+        throwStatus = true
+        cursorDiv.style.display = "none"
+        flyingDartsDiv[currentRound].style.display = 'block'
+        animateDart()
+    }
 }
 
 const animateDart = () => {
@@ -96,8 +104,8 @@ const calculateThrownValue = () => {
     const _bullr = 0.119
     const _scoreOrder = [6, 13, 4, 18, 1, 20, 5, 12, 9, 14, 11, 8, 16, 7, 19, 3, 17, 2, 15, 10]
 
-    const _x = throwX / playzoneDiv.offsetWidth - _cx
-    const _y = -(throwY / playzoneDiv.offsetHeight - _cy)
+    const _x = throwX / dartboardDiv.offsetWidth - _cx
+    const _y = -(throwY / dartboardDiv.offsetHeight - _cy)
     let _phi = Math.atan(_y / _x) * 180 / Math.PI
 
     if (_x < 0) { _phi += 180 }
