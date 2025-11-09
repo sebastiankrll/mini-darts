@@ -4,10 +4,10 @@ services:
     container_name: php-darts
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nextjs.rule=Host(`darts.skruellex.com`)"
-      - "traefik.http.routers.nextjs.entrypoints=websecure"
-      - "traefik.http.routers.nextjs.tls=true"
-      - "traefik.http.routers.nextjs.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.php.rule=Host(`darts.skruellex.com`)"
+      - "traefik.http.routers.php.entrypoints=websecure"
+      - "traefik.http.routers.php.tls=true"
+      - "traefik.http.routers.php.tls.certresolver=letsencrypt"
     networks:
       - traefik_proxy
     environment:
