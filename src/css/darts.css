@@ -1,83 +1,24 @@
-section {
+#menu {
     display: flex;
-    user-select: none;
-    position: relative;
-    background: var(--main-main-color);
-}
-
-.dartboard {
-    flex: 1;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
-.game-comment {
-    position: relative;
-    margin: 1rem auto;
-    margin-bottom: 0;
-    font-size: 2rem;
-    font-weight: 800;
-    text-transform: uppercase;
-}
-
-.board {
-    background: url("../images/hero/png/dartboard.png") no-repeat center center;
-    background-size: contain;
-    width: 30rem;
-    height: 30rem;
-    margin: auto;
-    position: relative;
-}
-
-.cursor {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    height: 15rem;
-    width: 15rem;
-    background: url("../images/hero/png/dart_0.png") no-repeat center center;
-    background-size: contain;
-    display: none;
-    pointer-events: none;
-}
-
-.flying-dart {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    height: 15rem;
-    width: 15rem;
-    background: url("../images/hero/png/dart_1.png") no-repeat center center;
-    background-size: contain;
-    display: none;
-}
-
-.info-board {
-    position: relative;
-    width: 15rem;
-    display: flex;
-    flex-direction: column;
+    flex-flow: column;
     background: var(--main-maindark-color);
     padding: 1rem;
-    justify-content: space-between;
+    gap: 1rem;
+    box-sizing: border-box;
     align-items: center;
 }
 
-.info-board p {
+#menu p {
     color: var(--main-blue-color);
     font-size: 1.5rem;
 }
 
-.info-toggles {
+.menu-settings {
     position: relative;
     display: flex;
 }
 
-.info-toggle {
+.menu-setting {
     position: relative;
     display: flex;
     align-items: center;
@@ -89,7 +30,7 @@ section {
     font-size: .7rem;
 }
 
-.help-info {
+#help-info {
     position: absolute;
     top: 0;
     left: 100%;
@@ -106,44 +47,35 @@ section {
     z-index: 1;
 }
 
-.info-counter .spanner {
+.scores {
+    display: flex;
+}
+
+.score {
+    margin: 0 .5rem;
+}
+
+#score-round span {
     margin: 0 0.5rem;
-    font-size: 1rem;
 }
 
-.infos {
-    font-size: 2rem;
-    color: white;
-    display: flex;
-}
-
-.info-average {
-    font-size: 1rem;
-    margin: 0 .5rem;
-}
-
-.info-score {
-    margin: 0 .5rem;
-}
-
-.darts {
+#darts {
     position: relative;
-    margin-top: 2rem;
+    margin-top: auto;
     display: flex;
 }
 
-.arrow-img{
+.dart {
     height: 8rem;
     width: 3rem;
     margin: 0 .5rem;
-    background: url("../images/hero/png/dart.png") no-repeat center center;
+    background: url("../images/darts/dart.png") no-repeat center center;
     background-size: contain;
 }
 
-.restart-button {
+#restart {
     background-color: var(--main-blue-color);
     width: 100%;
-    height: fit-content;
     color: var(--main-maindark-color);
     border-radius: 5px;
     padding: auto;
@@ -151,4 +83,55 @@ section {
     font-size: 1.5rem;
     margin-top: 1rem;
     cursor: pointer;
+}
+
+#playzone {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+#active-player {
+    position: relative;
+    margin: 1rem auto;
+    margin-bottom: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+#dartboard {
+    background: url("../images/darts/dartboard.png") no-repeat center center;
+    background-size: contain;
+    width: 30rem;
+    height: 30rem;
+    margin: auto;
+    position: relative;
+}
+
+.flying-dart {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    height: 15rem;
+    width: 15rem;
+    background: url("../images/darts/dart_1.png") no-repeat center center;
+    background-size: contain;
+    display: none;
+}
+
+#cursor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    height: 15rem;
+    width: 15rem;
+    background: url("../images/darts/dart_0.png") no-repeat center center;
+    background-size: contain;
+    display: none;
+    pointer-events: none;
 }
