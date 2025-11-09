@@ -9,7 +9,7 @@ services:
       - "traefik.http.routers.nextjs.tls=true"
       - "traefik.http.routers.nextjs.tls.certresolver=letsencrypt"
     networks:
-      - web
+      - traefik_proxy
     environment:
       - APP_ENV=prod
     restart: always
