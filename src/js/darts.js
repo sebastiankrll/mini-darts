@@ -189,7 +189,7 @@ const getThrow = () => {
     currentRound++
     if (currentRound > 2) {
         scores[currentPlayer] = _newScore
-        roundTimeout = setTimeout(resetRound, 2000)
+        roundTimeout = setTimeout(advanceRound, 2000)
     } else {
         throwStatus = false
         cursorDiv.style.display = "block"
@@ -203,7 +203,7 @@ const setBusted = () => {
     gameStatusDiv.style.color = 'var(--main-red-color)'
     gameStatusDiv.innerHTML = "Busted!"
 
-    roundTimeout = setTimeout(resetRound, 2000)
+    roundTimeout = setTimeout(advanceRound, 2000)
 }
 
 const setWon = () => {
@@ -262,20 +262,26 @@ const resetRound = () => {
         arrowflys.style.display = "none"
     })
 
-    // totalScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
-    // averageScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
+    gameStatusDiv.style.color = 'white'
+    gameStatusDiv.innerHTML = "Player " + (currentPlayer + 1)
+}
 
-    totalScoresDiv[currentPlayer].style.color = 'white'
+const advanceRound = () => {
+    totalScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
+    averageScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
 
     currentPlayer++
-    if (currentPlayer >= scores.length - 1) {
+
+    if (currentPlayer >= scores.length) {
         currentPlayer = 0
         overallRound++
         overallRoundDiv.innerHTML = overallRound + 1
     }
 
-    gameStatusDiv.style.color = 'white'
-    gameStatusDiv.innerHTML = "Player " + (currentPlayer + 1)
+    totalScoresDiv[currentPlayer].style.color = 'white'
+    averageScoresDiv[currentPlayer].style.color = 'white'
+
+    resetRound()
 }
 
 
@@ -284,8 +290,9 @@ const resetRound = () => {
 const restartGame = () => {
     clearTimeout(roundTimeout)
     resetRound()
+
+    overallRoundDiv.innerHTML = 1
     currentPlayer = 0
-    // let avgScores = [0]
     overallRound = 0
 
     scores.fill(scoreModes[scoreModeIndex])
@@ -302,8 +309,6 @@ const restartGame = () => {
         span.style.color = 'rgb(130, 130, 130)'
     })
     averageScoresDiv[0].style.color = 'white'
-
-    overallRoundDiv.innerHTML = 1
 }
 
 function openHelp() {
@@ -345,30 +350,30 @@ const changeScoreMode = (element) => {
     restartGame()
 }
 
-var gameModeToggle = document.querySelector('.game-mode');
-
-
 function changeGameMode() {
     restartGame();
     gameModes = !gameModes;
-    gameModeToggle.innerHTML = gameModeToggle.innerHTML == 'Single Out' ? 'Double Out' : 'Single Out';
+    gameModeToggle.innerHTML = gameModeToggle.innerHTML == 'Single Out' ? 'Double Out' : 'Single Out'
 }
 
 const changePlayerCount = () => {
-    restartGame()
-    if (score.length < 2) {
-        score.push(301);
-        avgscore.push(0);
-        scores.push([0]);
-        totalScoresDiv[score.length - 1].style.display = "block";
-        totalScoresDiv[score.length - 1].style.color = "rgb(130, 130, 130)";
-        averageScoresDiv[score.length - 1].style.display = "block";
-        averageScoresDiv[score.length - 1].style.color = "rgb(130, 130, 130)";
+    if (scores.length < 3) {
+        scores.push(301)
+        avgScores.push(0)
+
+        totalScoresDiv[scores.length - 1].style.display = "block"
+        totalScoresDiv[scores.length - 1].style.color = "rgb(130, 130, 130)"
+        averageScoresDiv[scores.length - 1].style.display = "block"
+        averageScoresDiv[scores.length - 1].style.color = "rgb(130, 130, 130)"
     } else {
-        score.pop();
-        avgscore.pop();
-        scores.pop();
-        totalScoresDiv[score.length].style.display = "none";
-        averageScoresDiv[score.length].style.display = "none";
+        for (let i = 1; i < scores.length; i++) {
+            totalScoresDiv[i].style.display = "none"
+            averageScoresDiv[i].style.display = "none"
+        }
+
+        scores = [301]
+        avgScores = [0]
     }
+
+    restartGame()
 }
