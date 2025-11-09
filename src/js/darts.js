@@ -28,6 +28,7 @@ let overallRound = 0
 let currentRound = 0
 let throwSum = 0
 let scoreModeIndex = 0
+let isFullscreen = false
 
 const moveCursor = (e) => {
     if (throwStatus) return
@@ -319,28 +320,16 @@ function openHelp() {
     }
 }
 
-var screenToggle = document.querySelector('.fullscreen');
-var dartSection = document.querySelector('section');
-var screenMode = false;
+const toggleFullscreen = (element) => {
+    const section = document.querySelector('section')
+    isFullscreen = !isFullscreen
 
-function toggleFullscreen() {
-    screenMode = !screenMode;
-    if (screenMode) {
-        if (screenToggle.requestFullscreen) {
-            dartSection.requestFullscreen();
-        } else if (screenToggle.webkitRequestFullscreen) {
-            dartSection.webkitRequestFullscreen();
-        } else if (screenToggle.msRequestFullscreen) {
-            dartSection.msRequestFullscreen();
-        }
+    if (isFullscreen) {
+        element.innerHTML = "Normal Screen"
+        section.requestFullscreen()
     } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
+        element.innerHTML = "Fullscreen"
+        document.exitFullscreen()
     }
 }
 

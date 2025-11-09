@@ -22,7 +22,12 @@ body {
 
 body {
     font-family: 'Manrope', sans-serif;
-    background: var(--main-main-color);
     color: white;
+    background: var(--main-main-color);
+}
+
+section {
     display: flex;
+    height: 100%;
+    background: var(--main-main-color);
 }
