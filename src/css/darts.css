@@ -1,0 +1,154 @@
+section {
+    display: flex;
+    user-select: none;
+    position: relative;
+    background: var(--main-main-color);
+}
+
+.dartboard {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-comment {
+    position: relative;
+    margin: 1rem auto;
+    margin-bottom: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.board {
+    background: url("../images/hero/png/dartboard.png") no-repeat center center;
+    background-size: contain;
+    width: 30rem;
+    height: 30rem;
+    margin: auto;
+    position: relative;
+}
+
+.cursor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    height: 15rem;
+    width: 15rem;
+    background: url("../images/hero/png/dart_0.png") no-repeat center center;
+    background-size: contain;
+    display: none;
+    pointer-events: none;
+}
+
+.flying-dart {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    height: 15rem;
+    width: 15rem;
+    background: url("../images/hero/png/dart_1.png") no-repeat center center;
+    background-size: contain;
+    display: none;
+}
+
+.info-board {
+    position: relative;
+    width: 15rem;
+    display: flex;
+    flex-direction: column;
+    background: var(--main-maindark-color);
+    padding: 1rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-board p {
+    color: var(--main-blue-color);
+    font-size: 1.5rem;
+}
+
+.info-toggles {
+    position: relative;
+    display: flex;
+}
+
+.info-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    height: .5rem;
+    color: var(--main-blue-color);
+    margin: .5rem;
+    cursor: pointer;
+    font-size: .7rem;
+}
+
+.help-info {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 20rem;
+    height: fit-content;
+    background: var(--main-blue-color);
+    color: var(--main-maindark-color);
+    border-radius: 5px;
+    margin: .5rem;
+    font-size: .8rem;
+    padding: .5rem;
+    transition: .3s;
+    display: none;
+    z-index: 1;
+}
+
+.info-counter .spanner {
+    margin: 0 0.5rem;
+    font-size: 1rem;
+}
+
+.infos {
+    font-size: 2rem;
+    color: white;
+    display: flex;
+}
+
+.info-average {
+    font-size: 1rem;
+    margin: 0 .5rem;
+}
+
+.info-score {
+    margin: 0 .5rem;
+}
+
+.darts {
+    position: relative;
+    margin-top: 2rem;
+    display: flex;
+}
+
+.arrow-img{
+    height: 8rem;
+    width: 3rem;
+    margin: 0 .5rem;
+    background: url("../images/hero/png/dart.png") no-repeat center center;
+    background-size: contain;
+}
+
+.restart-button {
+    background-color: var(--main-blue-color);
+    width: 100%;
+    height: fit-content;
+    color: var(--main-maindark-color);
+    border-radius: 5px;
+    padding: auto;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    cursor: pointer;
+}

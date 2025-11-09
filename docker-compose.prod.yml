@@ -1,0 +1,19 @@
+services:
+  php:
+    build: .
+    container_name: php-darts
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextjs.rule=Host(`darts.skruellex.com`)"
+      - "traefik.http.routers.nextjs.entrypoints=websecure"
+      - "traefik.http.routers.nextjs.tls=true"
+      - "traefik.http.routers.nextjs.tls.certresolver=letsencrypt"
+    networks:
+      - web
+    environment:
+      - APP_ENV=prod
+    restart: always
+
+networks:
+  traefik_proxy:
+    external: true

@@ -1,0 +1,24 @@
+# PHP specific
+/vendor/
+composer.phar
+composer.lock
+*.php~
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.sublime-workspace
+*.sublime-project
+
+# Testing
+/phpunit.xml
+.phpunit.result.cache
+/coverage/
