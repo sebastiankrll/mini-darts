@@ -1,300 +1,317 @@
-let board = document.querySelector('.board');
-let dartboard = document.querySelector('.dartboard');
-let arrow = document.querySelector('.cursor');
-let roundinfo = document.querySelector('.info-round');
-let arrowfly = document.querySelectorAll('.flying-dart');
-let scoreinfo = document.querySelectorAll('.info-score');
-let countinfo = document.querySelector('.info-counter');
-let avginfo = document.querySelectorAll('.info-average');
-let darts = document.querySelectorAll('.arrow-img');
-let congrats = document.querySelector('.congrats');
-let helpInfo = document.querySelector('.help-info');
-let gameText = document.querySelector('.game-comment');
-let cx = 0.5;
-let cy = 0.5;
-let cr = 0.402;
-let tr_min = 0.559;
-let tr_max = 0.626;
-let dr_min = 0.922;
-let dr_max = 1;
-let bulldr = 0.046;
-let bullr = 0.119;
-let score_order = [6, 13, 4, 18 , 1, 20, 5, 12, 9, 14, 11, 8, 16, 7, 19, 3, 17, 2, 15, 10];
-let mrefresh = 50;
+const playzoneDiv = document.getElementById('playzone')
+const dartboardDiv = document.getElementById('dartboard')
+const cursorDiv = document.getElementById('cursor')
+const overallRoundDiv = document.getElementById('score-round')
+const totalScoresDiv = document.querySelectorAll('#score-total span')
+const counterScoresDiv = document.querySelectorAll('#score-counter span')
+const averageScoresDiv = document.querySelectorAll('#score-average span')
+const flyingDartsDiv = document.querySelectorAll('.flying-dart')
+const staticDartsDiv = document.querySelectorAll('.dart')
+// const congrats = document.querySelector('.congrats')
+const helpInfoDiv = document.getElementById('help-info')
+const gameStatusDiv = document.getElementById('game-status')
 
-var width = board.offsetWidth;
-var height = board.offsetHeight;
-var currentPlayer = 0;
-var score = [301];
-var mousespeedx = 0;
-var mousespeedy = 0;
-var prevEvent, currentEvent;
-var throwstatus = false;
-var throwx = 0;
-var throwy = 0;
-var throwxs = 0;
-var throwys = 0;
-var id = null;
-var round = 0;
-var rounds = 0;
-var scores = [[0]];
-var avgscore = [0];
-var roundvalue = 0;
-var start = score[0];
+let roundTimeout = null
+let currentPlayer = 0
+let doubleMode = false
+let scores = [301]
+let avgScores = [0]
+let throws = [0, 0, 0]
+let throwStatus = false
+let throwX = 0
+let throwY = 0
+let throwSpeedX = 0
+let throwSpeedY = 0
+let overallRound = 0
+let currentRound = 0
+let throwSum = 0
 
-window.addEventListener('resize', setWindowSize);
+const moveCursor = (e) => {
+    if (throwStatus) return
 
-function setWindowSize() {
-    width = board.offsetWidth;
-    height = board.offsetHeight;
+    const _rectZone = playzoneDiv.getBoundingClientRect()
+    const _x = e.clientX - _rectZone.left
+    const _y = e.clientY - _rectZone.top
+
+    throwSpeedX = (_x - throwX)
+    throwSpeedY = (_y - throwY)
+
+    throwX = _x
+    throwY = _y
+
+    cursorDiv.style.left = throwX + 4 + 'px'
+    cursorDiv.style.top = throwY + 80 + 'px'
 }
 
-var x = 0;
-var y = 0;
+// setInterval(() => {
+//     if (prevEvent && currentEvent) {
+//         let mousex = currentEvent.screenX - prevEvent.screenX
+//         let mousey = currentEvent.screenY - prevEvent.screenY
 
-function coordinate(event) {
-    const rect = board.getBoundingClientRect();
-    const rectd = dartboard.getBoundingClientRect();
-    currentEvent = event;
+//         mouseSpeedX = 20 * mousex
+//         mouseSpeedY = 20 * mousey
+//     }
+//     prevEvent = currentEvent
+// }, 50)
 
-    if (!throwstatus) {
-        arrow.style.left = event.clientX - rectd.left + 4 + 'px';
-        arrow.style.top = event.clientY - rectd.top + 80 + 'px';
-        throwx = event.clientX - rect.left;
-        throwy = event.clientY - rect.top;
-    }
-
-    //console.log(throwx, throwy);
+const dartDown = () => {
+    throwStatus = false
 }
 
-setInterval(function() {
-    if (prevEvent && currentEvent) {
-        var mousex = currentEvent.screenX - prevEvent.screenX;
-        var mousey = currentEvent.screenY - prevEvent.screenY;
+const dartUp = () => {
+    throwStatus = true
+    flyingDartsDiv[currentRound].style.display = 'block'
+    animateDart()
+}
 
-        mousespeedx = 20 * mousex;
-        mousespeedy = 20 * mousey;
-    }
-    prevEvent = currentEvent;
-}, 50);
+const animateDart = () => {
+    let _animationInterval = null
+    let _i = 0
+    const _dartOffsets = [[1, 22], [2, 23], [2, 23], [2, 20], [10, -24]]
+    const _dartScales = [15, 12, 9, 6, 3];
 
-var roundTimeout = 0;
+    const animateFrame = () => {
+        if (_i == 50) {
+            clearInterval(_animationInterval)
 
-function counter() {
-    x = throwx / width - cx;
-    y = -(throwy / height - cy);
-    var phi = Math.atan(y/x) * 180 / Math.PI;
-    if (x < 0) {
-        phi = 180 + phi; 
-    }
-    if (y < 0 && x > 0) {
-        phi = 360 + phi;
-    }
-    var r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / cr;
+            flyingDartsDiv[currentRound].style.top = throwY + _dartOffsets[4][1] + 'px'
+            flyingDartsDiv[currentRound].style.left = throwX + _dartOffsets[4][0] + 'px'
+            flyingDartsDiv[currentRound].style.backgroundImage = 'url(../images/darts/dart_5.png)'
+            flyingDartsDiv[currentRound].style.width = _dartScales[4] + 'rem'
 
-    var idx = Math.round(phi / 18);
-    if (idx == 20) {
-        idx = 0;
-    }
-    var value = score_order[idx];
-    if (r > tr_min && r < tr_max) {
-        value = value * 3;
-    }
-    if (r > dr_min && r < dr_max) {
-        value = value * 2;
-    }
-    if (r > 1) {
-        value = 0;
-    }
-    if (r < bulldr) {
-        value = 50;
-    }
-    if (r > bulldr && r < bullr) {
-        value = 25;
-    }
-
-    darts[round].style.visibility = "hidden";
-    countinfo.childNodes[round*2].innerHTML = value;
-    roundvalue += value;
-    countinfo.childNodes[6].innerHTML = '(' + roundvalue + ')';
-
-    if (score[currentPlayer] - value >= 0) {
-        score[currentPlayer] = score[currentPlayer] - value;
-        scoreinfo[currentPlayer].innerHTML = score[currentPlayer];
-    } else {
-        countinfo.childNodes[6].style.color = 'var(--main-red-color)';
-        scoreinfo[currentPlayer].style.color = 'var(--main-red-color)';
-        gameText.style.color = 'var(--main-red-color)';
-        gameText.innerHTML = "Busted!"
-        roundTimeout = setTimeout(resetround, 2000);
-        score[currentPlayer] = start;
-        return;
-    }
-
-    if (score[currentPlayer] == 0) {
-        if (gameModes) {
-            if (r > dr_min && r < dr_max) {
-                scoreinfo[currentPlayer].style.color = 'var(--main-green-color)';
-                scoreinfo[currentPlayer].innerHTML = score[currentPlayer];
-                gameText.style.color = 'var(--main-green-color)';
-                gameText.innerHTML = "Player " + (currentPlayer + 1) + " wins!";
-                return;
-            } else {
-                countinfo.childNodes[6].style.color = 'var(--main-red-color)';
-                scoreinfo[currentPlayer].style.color = 'var(--main-red-color)';
-                gameText.style.color = 'var(--main-red-color)';
-                gameText.innerHTML = "Busted!"
-                roundTimeout = setTimeout(resetround, 2000);
-                score[currentPlayer] = start;
-                return;
-            }
+            throwStatus = false
+            getThrow()
         } else {
-            scoreinfo[currentPlayer].style.color = 'var(--main-green-color)';
-            scoreinfo[currentPlayer].innerHTML = score[currentPlayer];
-            gameText.style.color = 'var(--main-green-color)';
-            gameText.innerHTML = "Player " + (currentPlayer + 1) + " wins!";
-            return;
+            throwY += throwSpeedY * _i / 100 * Math.sin(0.8) + 10 / 2 * Math.pow(_i / 35, 2)
+            throwX += throwSpeedX * _i / 100
+
+            let idx = Math.floor(_i / (50 / 4))
+
+            flyingDartsDiv[currentRound].style.top = throwY + _dartOffsets[idx][1] + 'px'
+            flyingDartsDiv[currentRound].style.left = throwX + _dartOffsets[idx][0] + 'px'
+            flyingDartsDiv[currentRound].style.backgroundImage = 'url(../images/darts/dart_' + (idx + 1) + '.png)'
+            flyingDartsDiv[currentRound].style.width = _dartScales[_i] + 'rem'
+
+            _i++
         }
     }
 
-    if (score[currentPlayer] == 1 && gameModes) {
-        countinfo.childNodes[6].style.color = 'var(--main-red-color)';
-        scoreinfo[currentPlayer].style.color = 'var(--main-red-color)';
-        gameText.style.color = 'var(--main-red-color)';
-        gameText.innerHTML = "Busted!"
-        roundTimeout = setTimeout(resetround, 2000);
-        score[currentPlayer] = start;
-        return;
+    _animationInterval = setInterval(animateFrame, 10)
+}
+
+const calculateThrownValue = () => {
+    const _cx = 0.5
+    const _cy = 0.5
+    const _cr = 0.402
+    const _tr_min = 0.559
+    const _tr_max = 0.626
+    const _dr_min = 0.922
+    const _dr_max = 1
+    const _bulldr = 0.046
+    const _bullr = 0.119
+    const _scoreOrder = [6, 13, 4, 18, 1, 20, 5, 12, 9, 14, 11, 8, 16, 7, 19, 3, 17, 2, 15, 10]
+
+    const _x = throwX / playzoneDiv.offsetWidth - _cx
+    const _y = -(throwY / playzoneDiv.offsetHeight - _cy)
+    let _phi = Math.atan(_y / _x) * 180 / Math.PI
+
+    if (_x < 0) { _phi += 180 }
+    if (_y < 0 && _x > 0) { _phi += 360 }
+
+    const _r = Math.sqrt(Math.pow(_x, 2) + Math.pow(_y, 2)) / _cr
+    let _idx = Math.round(_phi / 18)
+    if (_idx == 20) { _idx = 0 }
+
+    if (_r > _tr_min && _r < _tr_max) {
+        return {
+            value: _scoreOrder[_idx] * 3,
+            isDouble: false
+        }
+    }
+    if (_r > _dr_min && _r < _dr_max) {
+        return {
+            value: _scoreOrder[_idx] * 3,
+            isDouble: true
+        }
+    }
+    if (_r > 1) {
+        return {
+            value: 0,
+            isDouble: false
+        }
+    }
+    if (_r < _bulldr) {
+        return {
+            value: 50,
+            isDouble: true
+        }
+    }
+    if (_r > _bulldr && _r < _bullr) {
+        return {
+            value: 25,
+            isDouble: false
+        }
     }
 
-    scores[currentPlayer].push(value);
+    return {
+        value: _scoreOrder[_idx],
+        isDouble: false
+    }
+}
+
+const getThrow = () => {
+    const _throw = calculateThrownValue()
+
+    staticDartsDiv[currentRound].style.visibility = "hidden"
+    counterScoresDiv[currentRound].innerHTML = _throw.value
+    throwSum += _throw.value
+    counterScoresDiv[3].innerHTML = `(${throwSum})`
+
+    const _newScore = scores[currentPlayer] - _throw.value
+
+    // Overthrown
+    if (_newScore < 0) {
+        setBusted()
+        return
+    }
+
+    // Single-out throw in double mode
+    if (_newScore == 0 && doubleMode && !_throw.isDouble) {
+        setBusted()
+        return
+    }
+
+    // Exception: Only 1 left in double mode
+    if (_newScore == 1 && doubleMode) {
+        setBusted()
+        return
+    }
+
+    throws[currentRound] = _throw.value
+    totalScoresDiv[currentPlayer].innerHTML = _newScore
+
+    // Win scenarios
+    if (_newScore == 0) {
+        setWon()
+        return
+    }
+
+    currentRound++
+    if (currentRound > 2) {
+        roundTimeout = setTimeout(resetRound, 2000)
+    }
+}
+
+const setBusted = () => {
+    counterScoresDiv.childNodes[3].style.color = 'var(--main-red-color)'
+    totalScoresDiv[currentPlayer].style.color = 'var(--main-red-color)'
+    gameStatusDiv.style.color = 'var(--main-red-color)'
+    gameStatusDiv.innerHTML = "Busted!"
+    roundTimeout = setTimeout(resetRound, 2000)
+}
+
+const setWon = () => {
+    totalScoresDiv[currentPlayer].style.color = 'var(--main-green-color)'
+    gameStatusDiv.style.color = 'var(--main-green-color)'
+    gameStatusDiv.innerHTML = "Player " + (currentPlayer + 1) + " wins!"
+}
+
+const calculateAverage = () => {
+    const _previousThrows = overallRound * 3
+    const _currentSum = throws.reduce((a, b) => a + b, 0)
+    const _remainingThrows = 2 - currentRound
+
+    let _predictedThrows = []
+
+    if (_remainingThrows > 0) {
+        const _predictedValue = currentRound === 0 ? currentThrows[0] : sumCurrent / (currentRound + 1)
+        _predictedThrows = Array(_remainingThrows).fill(_predictedValue)
+    }
+
+    const _predictedSum = _currentSum + _predictedThrows.reduce((a, b) => a + b, 0)
+
+    const _newAverage =
+        ((avgScores[currentPlayer] * totalPreviousThrows) + predictedSum) /
+        (totalPreviousThrows + throwsPerRound);
+
+    return {
+        predictedThrows,
+        predictedSum,
+        predictedOverallAverage: newAverage,
+    };
+
     if (rounds > 0) {
-        avgscore[currentPlayer] = scores[currentPlayer].reduce((accumulator, currentValue) => accumulator + currentValue, 0) / rounds;
+        avgscore[currentPlayer] = scores[currentPlayer].reduce((accumulator, currentValue) => accumulator + currentValue, 0) / rounds
     } else {
-        avgscore[currentPlayer] = scores[currentPlayer].reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    }
-    
-    avginfo[currentPlayer].innerHTML = avgscore[currentPlayer].toFixed(2);
-
-    round++;
-    if (round > 2) {
-        start = score[currentPlayer];
-        roundTimeout = setTimeout(resetround, 2000);
+        avgscore[currentPlayer] = scores[currentPlayer].reduce((accumulator, currentValue) => accumulator + currentValue, 0)
     }
 
-    throwstatus = false;
+    averageScoresDiv[currentPlayer].innerHTML = avgscore[currentPlayer].toFixed(2)
 }
 
-function resetround() {
-    round = 0;
-    countinfo.childNodes.forEach(child => {
-        child.innerHTML = '--';
-    });
-    darts.forEach(dart => {
-        dart.style.visibility = "visible";
-    });
-    arrowfly.forEach(arrowflys => {
-        arrowflys.style.display = "none";
-    });
-    countinfo.childNodes[6].innerHTML = '(--)';
-    countinfo.childNodes[6].style.color = 'white';
-    scoreinfo[currentPlayer].style.color = 'rgb(130, 130, 130)';
-    avginfo[currentPlayer].style.color = 'rgb(130, 130, 130)';
-    scoreinfo[currentPlayer].innerHTML = score[currentPlayer];
-    currentPlayer++;
-    if (currentPlayer == score.length) {
-        currentPlayer = 0;
-        rounds++;
-        roundinfo.innerHTML = rounds + 1;
+const resetRound = () => {
+    currentRound = 0
+
+    counterScoresDiv.forEach(span => {
+        span.innerHTML = '--'
+    })
+    staticDartsDiv.forEach(dart => {
+        dart.style.visibility = "visible"
+    })
+    flyingDartsDiv.forEach(arrowflys => {
+        arrowflys.style.display = "none"
+    })
+
+    counterScoresDiv[2].style.color = 'white'
+    totalScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
+    averageScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
+    totalScoresDiv[currentPlayer].innerHTML = scores[currentPlayer]
+
+    currentPlayer++
+    if (currentPlayer == scores.length) {
+        currentPlayer = 0
+        overallRound++
+        overallRoundDiv.innerHTML = overallRound + 1
     }
-    scoreinfo[currentPlayer].style.color = 'white';
-    avginfo[currentPlayer].style.color = 'white';
-    roundvalue = 0;
-    gameText.style.color = 'white';
-    gameText.innerHTML = "Player " + (currentPlayer + 1);
+
+    throwSum = 0
+    gameStatusDiv.style.color = 'white'
+    gameStatusDiv.innerHTML = "Player " + (currentPlayer + 1)
 }
 
-function startgame() {
-    score[currentPlayer] = 301;
-    round = 0;
-}
 
-function dartDown() {
-    arrow.style.display = 'block';
-    board.style.cursor = 'none';
-    throwstatus = false;
-}
+// Game settings
 
-function dartUp() {
-    board.style.cursor = 'default';
-    arrow.style.display = 'none';
-    throwstatus = true;
-    throwxs = mousespeedx;
-    throwys = mousespeedy;
+const restartGame = () => {
+    clearTimeout(roundTimeout)
 
-    arrowfly[round].style.display = 'block';
-    animateDart();
-}
+    rounds = 0
+    resetRound()
 
-var dartoffsets = [[1, 22], [2, 23], [2, 23], [2, 20], [10, -24]];
-var scalesIMG = [15, 12, 9, 6, 3];
-
-function animateDart() {
-    clearInterval(id);
-    id = setInterval(frame, 10);
-    var i = 0;
-    function frame() {
-        if (i == 50) {
-            clearInterval(id);
-            arrowfly[round].style.top = throwy + dartoffsets[4][1] + 'px';
-            arrowfly[round].style.left = throwx + dartoffsets[4][0] + 'px';
-            arrowfly[round].style.backgroundImage = 'url(../images/hero/png/dart_5.png)';
-            arrowfly[round].style.width = scalesIMG[4] + 'rem';
-            counter();
-        } else {
-            throwy = throwy + throwys/200 * i/50 * Math.sin(0.8) + 10/2 * Math.pow(i/35, 2);
-            throwx = throwx + throwxs/400 * i/50;
-
-            var idx = Math.floor(i/(50/4));
-
-            arrowfly[round].style.top = throwy + dartoffsets[idx][1] + 'px';
-            arrowfly[round].style.left = throwx + dartoffsets[idx][0] + 'px';
-            arrowfly[round].style.backgroundImage = 'url(../images/hero/png/dart_' + (idx + 1) + '.png)';
-            arrowfly[round].style.width = scalesIMG[i] + 'rem';
-            i++;
-        }
-    }
-}
-
-function restartGame() {
-    clearTimeout(roundTimeout);
-    rounds = 0;
-    round = 0;
-    resetround();
-    scoreinfo.forEach(info => {
-        info.innerHTML = scoreModeToggle.innerHTML;
-        info.style.color = 'rgb(130, 130, 130)';
-    });
+    totalScoresDiv.forEach(info => {
+        info.innerHTML = scoreModeToggle.innerHTML
+        info.style.color = 'rgb(130, 130, 130)'
+    })
     for (var i = 0; i < score.length; i++) {
-        score[i] = scoreModeToggle.innerHTML;
-        avgscore[i] = 0;
-        scores[i] = [0];
+        score[i] = scoreModeToggle.innerHTML
+        avgscore[i] = 0
+        scores[i] = [0]
     }
-    scoreinfo[0].style.color = 'white';
-    roundinfo.innerHTML = 1;
-    avginfo.forEach(info => {
-        info.innerHTML = '--';
-        info.style.color = 'rgb(130, 130, 130)';
-    });
-    avginfo[0].style.color = 'white';
-    currentPlayer = 0;
+    totalScoresDiv[0].style.color = 'white'
+    currentRoundDiv.innerHTML = 1
+    averageScoresDiv.forEach(info => {
+        info.innerHTML = '--'
+        info.style.color = 'rgb(130, 130, 130)'
+    })
+    averageScoresDiv[0].style.color = 'white'
+    currentPlayer = 0
 }
 
 function help() {
-    if (helpInfo.style.display == "block") {
-        helpInfo.style.display = "none";
+    if (helpInfoDiv.style.display == "block") {
+        helpInfoDiv.style.display = "none";
     } else {
-        helpInfo.style.display = "block";
+        helpInfoDiv.style.display = "block";
     }
 }
 
@@ -337,7 +354,7 @@ function scoreMode() {
 }
 
 var gameModeToggle = document.querySelector('.game-mode');
-var gameModes = false;
+
 
 function gameMode() {
     restartGame();
@@ -351,15 +368,15 @@ function playerMode() {
         score.push(301);
         avgscore.push(0);
         scores.push([0]);
-        scoreinfo[score.length - 1].style.display = "block";
-        scoreinfo[score.length - 1].style.color = "rgb(130, 130, 130)";
-        avginfo[score.length - 1].style.display = "block";
-        avginfo[score.length - 1].style.color = "rgb(130, 130, 130)";
+        totalScoresDiv[score.length - 1].style.display = "block";
+        totalScoresDiv[score.length - 1].style.color = "rgb(130, 130, 130)";
+        averageScoresDiv[score.length - 1].style.display = "block";
+        averageScoresDiv[score.length - 1].style.color = "rgb(130, 130, 130)";
     } else {
         score.pop();
         avgscore.pop();
         scores.pop();
-        scoreinfo[score.length].style.display = "none";
-        avginfo[score.length].style.display = "none";
+        totalScoresDiv[score.length].style.display = "none";
+        averageScoresDiv[score.length].style.display = "none";
     }
 }

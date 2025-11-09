@@ -55,7 +55,7 @@
     margin: 0 .5rem;
 }
 
-#score-round span {
+.scores span {
     margin: 0 0.5rem;
 }
 
@@ -93,7 +93,7 @@
     flex-direction: column;
 }
 
-#active-player {
+#game-status {
     position: relative;
     margin: 1rem auto;
     margin-bottom: 0;
@@ -113,8 +113,6 @@
 
 .flying-dart {
     position: absolute;
-    top: 0;
-    left: 0;
     transform: translate(-50%, -50%);
     height: 15rem;
     width: 15rem;
@@ -132,6 +130,5 @@
     width: 15rem;
     background: url("../images/darts/dart_0.png") no-repeat center center;
     background-size: contain;
-    display: none;
     pointer-events: none;
 }

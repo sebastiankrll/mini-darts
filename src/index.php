@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/darts.css">
 </head>
-<body onmousemove="coordinate(event)">
+<body>
     <div id="menu">
         <div class="menu-settings">
             <div class="menu-setting" onclick="help()">Help</div>
@@ -29,40 +29,39 @@
             <br>Tip: The dart will fly higher, if you swipe fast. Swiping slowly may cause the dart to drop.
         </div>
         <p>Round</p>
-        <div class="scores">1</div>
+        <div class="scores" id="score-round">1</div>
         <p>Score</p>
-        <div class="scores" id="score-overall">
-            <div class="score">301</div>
-            <div class="score" style="display:none">301</div>
-            <div class="score" style="display:none">301</div>
+        <div class="scores" id="score-total">
+            <span>301</span>
+            <span>301</span>
+            <span>301</span>
         </div>
         <p>Counter</p>
-        <div class="scores" id="score-round">
+        <div class="scores" id="score-counter">
             <span>--</span>
             <span>--</span>
             <span>--</span>
             <span>(--)</span>
         </div>
         <p>Average</p>
-        <div class="scores">
-            <div class="score">--</div>
-            <div class="score" style="display:none">--</div>
-            <div class="score" style="display:none">--</div>
+        <div class="scores" id="score-average">
+            <span>--</span>
+            <span>--</span>
+            <span>--</span>
         </div>
         <div id="darts">
             <div class="dart"></div>
             <div class="dart"></div>
             <div class="dart"></div>
         </div>
-        <div id="restart" onclick="restartGame()">Restart</div>
+        <div id="restart" onclick="restartGame()">New Game</div>
     </div>
-    <div id="playzone" onmousedown="dartDown()" onmouseup="dartUp()">
-        <div id="active-player">Player 1</div>
-        <div id="dartboard">
-            <div class="flying-dart"></div>
-            <div class="flying-dart"></div>
-            <div class="flying-dart"></div>
-        </div>
+    <div id="playzone" onmousedown="dartDown()" onmouseup="dartUp()" onmousemove="moveCursor(event)">
+        <div id="game-status">Player 1</div>
+        <div id="dartboard"></div>
+        <div class="flying-dart"></div>
+        <div class="flying-dart"></div>
+        <div class="flying-dart"></div>
         <div id="cursor"></div>
     </div>
     <script src="js/darts.js"></script>
