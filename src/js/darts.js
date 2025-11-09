@@ -17,8 +17,8 @@ let roundTimeout = null
 let currentPlayer = 0
 let doubleMode = false
 let scores = [301]
-let avgScores = [0]
-let throws = [0, 0, 0]
+let tempScore = 301
+let throws = [[]]
 let throwStatus = false
 let throwX = 0
 let throwY = 0
@@ -157,39 +157,42 @@ const getThrow = () => {
     counterScoresDiv[currentRound].innerHTML = _throw.value
     throwSum += _throw.value
     counterScoresDiv[3].innerHTML = `(${throwSum})`
-    throws[currentRound] = _throw.value
+    throws[currentPlayer].push(_throw.value)
 
-    const _newScore = scores[currentPlayer] - throws.reduce((a, b) => a + b, 0)
+    tempScore -= _throw.value
 
     // Overthrown
-    if (_newScore < 0) {
+    if (tempScore < 0) {
         setBusted()
         return
     }
 
     // Single-out throw in double mode
-    if (_newScore == 0 && doubleMode && !_throw.isDouble) {
+    if (tempScore == 0 && doubleMode && !_throw.isDouble) {
         setBusted()
         return
     }
 
     // Exception: Only 1 left in double mode
-    if (_newScore == 1 && doubleMode) {
+    if (tempScore == 1 && doubleMode) {
         setBusted()
         return
     }
 
-    totalScoresDiv[currentPlayer].innerHTML = _newScore
+    const _average = getAverage()
+    averageScoresDiv[currentPlayer].innerHTML = _average.toFixed(2)
+    totalScoresDiv[currentPlayer].innerHTML = tempScore
 
     // Win scenarios
-    if (_newScore == 0) {
+    if (tempScore == 0) {
         setWon()
         return
     }
 
     currentRound++
     if (currentRound > 2) {
-        scores[currentPlayer] = _newScore
+        scores[currentPlayer] = tempScore
+        console.log(throws)
         roundTimeout = setTimeout(advanceRound, 2000)
     } else {
         throwStatus = false
@@ -213,42 +216,23 @@ const setWon = () => {
     gameStatusDiv.innerHTML = "Player " + (currentPlayer + 1) + " wins!"
 }
 
-const calculateAverage = () => {
-    const _previousThrows = overallRound * 3
-    const _currentSum = throws.reduce((a, b) => a + b, 0)
-    const _remainingThrows = 2 - currentRound
+const getAverage = () => {
+    if (throws[currentPlayer].length === 0) return 0
 
-    let _predictedThrows = []
+    const _sums = []
 
-    if (_remainingThrows > 0) {
-        const _predictedValue = currentRound === 0 ? currentThrows[0] : sumCurrent / (currentRound + 1)
-        _predictedThrows = Array(_remainingThrows).fill(_predictedValue)
+    for (let i = 0; i < throws[currentPlayer].length; i += 3) {
+        const _chunk = throws[currentPlayer].slice(i, i + 3)
+        const _sum = _chunk.reduce((a, b) => a + b, 0)
+        _sums.push(_sum)
     }
 
-    const _predictedSum = _currentSum + _predictedThrows.reduce((a, b) => a + b, 0)
-
-    const _newAverage =
-        ((avgScores[currentPlayer] * totalPreviousThrows) + predictedSum) /
-        (totalPreviousThrows + throwsPerRound);
-
-    return {
-        predictedThrows,
-        predictedSum,
-        predictedOverallAverage: newAverage,
-    };
-
-    if (rounds > 0) {
-        avgscore[currentPlayer] = scores[currentPlayer].reduce((accumulator, currentValue) => accumulator + currentValue, 0) / rounds
-    } else {
-        avgscore[currentPlayer] = scores[currentPlayer].reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-    }
-
-    averageScoresDiv[currentPlayer].innerHTML = avgscore[currentPlayer].toFixed(2)
+    const _total = _sums.reduce((a, b) => a + b, 0)
+    return _total / _sums.length
 }
 
 const resetRound = () => {
     currentRound = 0
-    throws = [0, 0, 0]
     throwSum = 0
     throwStatus = false
     cursorDiv.style.display = "block"
@@ -272,12 +256,13 @@ const advanceRound = () => {
     averageScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
 
     currentPlayer++
-
     if (currentPlayer >= scores.length) {
         currentPlayer = 0
         overallRound++
         overallRoundDiv.innerHTML = overallRound + 1
     }
+
+    tempScore = scores[currentPlayer]
 
     totalScoresDiv[currentPlayer].style.color = 'white'
     averageScoresDiv[currentPlayer].style.color = 'white'
@@ -292,12 +277,14 @@ const restartGame = () => {
     clearTimeout(roundTimeout)
     resetRound()
 
+    throws = Array.from({ length: scores.length }, () => [])
+
     overallRoundDiv.innerHTML = 1
     currentPlayer = 0
     overallRound = 0
 
     scores.fill(scoreModes[scoreModeIndex])
-    avgScores.fill(0)
+    tempScore = scoreModes[scoreModeIndex]
 
     totalScoresDiv.forEach(span => {
         span.innerHTML = scoreModes[scoreModeIndex]
@@ -345,7 +332,6 @@ const changeGameMode = (element) => {
 const changePlayerCount = (element) => {
     if (scores.length < 3) {
         scores.push(301)
-        avgScores.push(0)
 
         totalScoresDiv[scores.length - 1].style.display = "block"
         totalScoresDiv[scores.length - 1].style.color = "rgb(130, 130, 130)"
@@ -360,7 +346,6 @@ const changePlayerCount = (element) => {
         }
 
         scores = [301]
-        avgScores = [0]
         element.innerHTML = "1x Player(s)"
     }
 
