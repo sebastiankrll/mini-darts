@@ -56,7 +56,7 @@
         </div>
         <div id="restart" onclick="restartGame()">New Game</div>
     </div>
-    <div id="playzone" onmouseup="dartUp()" onmousemove="moveCursor(event)" onclick="log(event)">
+    <div id="playzone" onmouseup="dartUp()" onmousemove="moveCursor(event)">
         <div id="game-status">Player 1</div>
         <div id="dartboard" draggable="false">
             <div class="flying-dart" draggable="false"></div>

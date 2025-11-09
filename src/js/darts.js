@@ -26,12 +26,6 @@ let overallRound = 0
 let currentRound = 0
 let throwSum = 0
 
-const log = (e) => {
-    const _rectZone = dartboardDiv.getBoundingClientRect()
-    const _x = (e.clientX - _rectZone.left) / dartboardDiv.offsetWidth
-    const _y = (e.clientY - _rectZone.top) / dartboardDiv.offsetHeight
-}
-
 const moveCursor = (e) => {
     if (throwStatus) return
 
@@ -52,6 +46,7 @@ const moveCursor = (e) => {
 const dartUp = () => {
     if (!throwStatus) {
         throwStatus = true
+        staticDartsDiv[currentRound].style.visibility = "hidden"
         cursorDiv.style.display = "none"
         flyingDartsDiv[currentRound].style.display = 'block'
         animateDart()
@@ -155,12 +150,12 @@ const calculateThrownValue = () => {
 const getThrow = () => {
     const _throw = calculateThrownValue()
 
-    staticDartsDiv[currentRound].style.visibility = "hidden"
     counterScoresDiv[currentRound].innerHTML = _throw.value
     throwSum += _throw.value
     counterScoresDiv[3].innerHTML = `(${throwSum})`
+    throws[currentRound] = _throw.value
 
-    const _newScore = scores[currentPlayer] - _throw.value
+    const _newScore = scores[currentPlayer] - throws.reduce((a, b) => a + b, 0)
 
     // Overthrown
     if (_newScore < 0) {
@@ -180,7 +175,6 @@ const getThrow = () => {
         return
     }
 
-    throws[currentRound] = _throw.value
     totalScoresDiv[currentPlayer].innerHTML = _newScore
 
     // Win scenarios
@@ -191,6 +185,7 @@ const getThrow = () => {
 
     currentRound++
     if (currentRound > 2) {
+        scores[currentPlayer] = _newScore
         roundTimeout = setTimeout(resetRound, 2000)
     } else {
         throwStatus = false
@@ -199,10 +194,12 @@ const getThrow = () => {
 }
 
 const setBusted = () => {
-    counterScoresDiv.childNodes[3].style.color = 'var(--main-red-color)'
+    totalScoresDiv[currentPlayer].innerHTML = scores[currentPlayer]
+
     totalScoresDiv[currentPlayer].style.color = 'var(--main-red-color)'
     gameStatusDiv.style.color = 'var(--main-red-color)'
     gameStatusDiv.innerHTML = "Busted!"
+
     roundTimeout = setTimeout(resetRound, 2000)
 }
 
@@ -247,6 +244,8 @@ const calculateAverage = () => {
 
 const resetRound = () => {
     currentRound = 0
+    throws = [0, 0, 0]
+    throwSum = 0
     throwStatus = false
     cursorDiv.style.display = "block"
 
@@ -260,19 +259,18 @@ const resetRound = () => {
         arrowflys.style.display = "none"
     })
 
-    counterScoresDiv[2].style.color = 'white'
-    totalScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
-    averageScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
-    totalScoresDiv[currentPlayer].innerHTML = scores[currentPlayer]
+    // totalScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
+    // averageScoresDiv[currentPlayer].style.color = 'rgb(130, 130, 130)'
+
+    totalScoresDiv[currentPlayer].style.color = 'white'
 
     currentPlayer++
-    if (currentPlayer == scores.length) {
+    if (currentPlayer >= scores.length - 1) {
         currentPlayer = 0
         overallRound++
         overallRoundDiv.innerHTML = overallRound + 1
     }
 
-    throwSum = 0
     gameStatusDiv.style.color = 'white'
     gameStatusDiv.innerHTML = "Player " + (currentPlayer + 1)
 }
