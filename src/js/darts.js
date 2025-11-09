@@ -339,13 +339,13 @@ const changeScoreMode = (element) => {
     restartGame()
 }
 
-function changeGameMode() {
-    restartGame();
-    gameModes = !gameModes;
-    gameModeToggle.innerHTML = gameModeToggle.innerHTML == 'Single Out' ? 'Double Out' : 'Single Out'
+const changeGameMode = (element) => {
+    doubleMode = !doubleMode
+    element.innerHTML = doubleMode ? 'Double Out' : 'Single Out'
+    restartGame()
 }
 
-const changePlayerCount = () => {
+const changePlayerCount = (element) => {
     if (scores.length < 3) {
         scores.push(301)
         avgScores.push(0)
@@ -354,6 +354,8 @@ const changePlayerCount = () => {
         totalScoresDiv[scores.length - 1].style.color = "rgb(130, 130, 130)"
         averageScoresDiv[scores.length - 1].style.display = "block"
         averageScoresDiv[scores.length - 1].style.color = "rgb(130, 130, 130)"
+
+        element.innerHTML = `${scores.length}x Player(s)`
     } else {
         for (let i = 1; i < scores.length; i++) {
             totalScoresDiv[i].style.display = "none"
@@ -362,6 +364,7 @@ const changePlayerCount = () => {
 
         scores = [301]
         avgScores = [0]
+        element.innerHTML = "1x Player(s)"
     }
 
     restartGame()

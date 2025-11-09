@@ -19,8 +19,8 @@
             </div>
             <div class="menu-settings">
                 <div class="menu-setting" onclick="changeScoreMode(this)">301</div>
-                <div class="menu-setting" onclick="changePlayerCount()">Player(s)</div>
-                <div class="menu-setting" onclick="gameMode()">Single Out</div>
+                <div class="menu-setting" onclick="changePlayerCount(this)">1x Player(s)</div>
+                <div class="menu-setting" onclick="changeGameMode(this)">Single Out</div>
             </div>  
             <div id="help-info">
                 <ol>
