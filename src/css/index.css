@@ -33,3 +33,11 @@ section {
     flex: 1;
     background: var(--main-main-color);
 }
+
+#menu footer p {
+    font-size: .7rem;
+}
+
+a {
+    color: inherit;
+}

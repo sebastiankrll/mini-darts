@@ -59,6 +59,9 @@
                 <div class="dart"></div>
             </div>
             <div id="restart" onclick="restartGame()">New Game</div>
+            <footer>
+                <p>Report bugs or send ❤️ on <a href="https://github.com/sebastiankrll/mini-darts" target="_blank">GitHub</a></p>
+            </footer>
         </div>
         <div id="playzone" onmouseup="dartUp()" onmousemove="moveCursor(event)">
             <div id="game-status">Player 1</div>
