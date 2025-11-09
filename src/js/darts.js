@@ -240,6 +240,7 @@ const resetRound = () => {
     counterScoresDiv.forEach(span => {
         span.innerHTML = '--'
     })
+    counterScoresDiv[3].innerHTML = "(--)"
     staticDartsDiv.forEach(dart => {
         dart.style.visibility = "visible"
     })

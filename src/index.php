@@ -20,15 +20,16 @@
                     <li>The faster you swipe, the higher the dart will fly. Swiping slowly may cause the dart to drop below the board, and vice versa.</li>
                 </ol> 
             </div>
-            <div class="menu-settings">
-                <div class="menu-setting" onclick="openHelp(this)">Help</div>
-                <div class="menu-setting" onclick="toggleFullscreen(this)">Fullscreen</div>
+            <div class="menu-toggles">
+                <div class="menu-toggle" onclick="openHelp(this)">Help</div>
+                <div class="menu-toggle" onclick="toggleFullscreen(this)">Fullscreen</div>
             </div>
-            <div class="menu-settings">
-                <div class="menu-setting" onclick="changeScoreMode(this)">301</div>
-                <div class="menu-setting" onclick="changePlayerCount(this)">1x Player(s)</div>
-                <div class="menu-setting" onclick="changeGameMode(this)">Single Out</div>
-            </div>  
+            <p>Game Modes</p>
+            <div class="game-modes">
+                <div class="game-mode" onclick="changeScoreMode(this)">301</div>
+                <div class="game-mode" onclick="changePlayerCount(this)">1x Player(s)</div>
+                <div class="game-mode" onclick="changeGameMode(this)">Single Out</div>
+            </div>
             <p>Round</p>
             <div class="scores" id="score-round">1</div>
             <p>Score</p>
