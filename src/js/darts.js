@@ -11,6 +11,8 @@ const staticDartsDiv = document.querySelectorAll('.dart')
 const helpInfoDiv = document.getElementById('help-info')
 const gameStatusDiv = document.getElementById('game-status')
 
+const scoreModes = [301, 501, 701]
+
 let roundTimeout = null
 let currentPlayer = 0
 let doubleMode = false
@@ -25,6 +27,7 @@ let throwSpeedY = 0
 let overallRound = 0
 let currentRound = 0
 let throwSum = 0
+let scoreModeIndex = 0
 
 const moveCursor = (e) => {
     if (throwStatus) return
@@ -280,30 +283,30 @@ const resetRound = () => {
 
 const restartGame = () => {
     clearTimeout(roundTimeout)
-
-    rounds = 0
     resetRound()
+    currentPlayer = 0
+    // let avgScores = [0]
+    overallRound = 0
 
-    totalScoresDiv.forEach(info => {
-        info.innerHTML = scoreModeToggle.innerHTML
-        info.style.color = 'rgb(130, 130, 130)'
+    scores.fill(scoreModes[scoreModeIndex])
+    avgScores.fill(0)
+
+    totalScoresDiv.forEach(span => {
+        span.innerHTML = scoreModes[scoreModeIndex]
+        span.style.color = 'rgb(130, 130, 130)'
     })
-    for (var i = 0; i < score.length; i++) {
-        score[i] = scoreModeToggle.innerHTML
-        avgscore[i] = 0
-        scores[i] = [0]
-    }
     totalScoresDiv[0].style.color = 'white'
-    currentRoundDiv.innerHTML = 1
-    averageScoresDiv.forEach(info => {
-        info.innerHTML = '--'
-        info.style.color = 'rgb(130, 130, 130)'
+
+    averageScoresDiv.forEach(span => {
+        span.innerHTML = '--'
+        span.style.color = 'rgb(130, 130, 130)'
     })
     averageScoresDiv[0].style.color = 'white'
-    currentPlayer = 0
+
+    overallRoundDiv.innerHTML = 1
 }
 
-function help() {
+function openHelp() {
     if (helpInfoDiv.style.display == "block") {
         helpInfoDiv.style.display = "none";
     } else {
@@ -315,7 +318,7 @@ var screenToggle = document.querySelector('.fullscreen');
 var dartSection = document.querySelector('section');
 var screenMode = false;
 
-function fullscreen() {
+function toggleFullscreen() {
     screenMode = !screenMode;
     if (screenMode) {
         if (screenToggle.requestFullscreen) {
@@ -336,11 +339,7 @@ function fullscreen() {
     }
 }
 
-var scoreModes = [301, 501, 701];
-var scoreIdx = 1;
-var scoreModeToggle = document.querySelector('.score-mode');
-
-function scoreMode() {
+function changeScoreMode() {
     scoreModeToggle.innerHTML = scoreModes[scoreIdx];
     restartGame();
     scoreIdx++;
@@ -352,14 +351,14 @@ function scoreMode() {
 var gameModeToggle = document.querySelector('.game-mode');
 
 
-function gameMode() {
+function changeGameMode() {
     restartGame();
     gameModes = !gameModes;
     gameModeToggle.innerHTML = gameModeToggle.innerHTML == 'Single Out' ? 'Double Out' : 'Single Out';
 }
 
-function playerMode() {
-    restartGame();
+const changePlayerCount = () => {
+    restartGame()
     if (score.length < 2) {
         score.push(301);
         avgscore.push(0);

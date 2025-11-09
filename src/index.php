@@ -33,8 +33,14 @@
         <p>Score</p>
         <div class="scores" id="score-total">
             <span>301</span>
-            <span>301</span>
-            <span>301</span>
+            <span style="display: none">301</span>
+            <span style="display: none">301</span>
+        </div>
+        <p>Average</p>
+        <div class="scores" id="score-average">
+            <span>--</span>
+            <span style="display: none">--</span>
+            <span style="display: none">--</span>
         </div>
         <p>Counter</p>
         <div class="scores" id="score-counter">
@@ -42,12 +48,6 @@
             <span>--</span>
             <span>--</span>
             <span>(--)</span>
-        </div>
-        <p>Average</p>
-        <div class="scores" id="score-average">
-            <span>--</span>
-            <span>--</span>
-            <span>--</span>
         </div>
         <div id="darts">
             <div class="dart"></div>
