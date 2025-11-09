@@ -24,10 +24,12 @@ body {
     font-family: 'Manrope', sans-serif;
     color: white;
     background: var(--main-main-color);
+    display: flex;
+    flex-flow: column;
 }
 
 section {
     display: flex;
-    height: 100%;
+    flex: 1;
     background: var(--main-main-color);
 }

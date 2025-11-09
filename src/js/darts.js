@@ -7,7 +7,6 @@ const counterScoresDiv = document.querySelectorAll('#score-counter span')
 const averageScoresDiv = document.querySelectorAll('#score-average span')
 const flyingDartsDiv = document.querySelectorAll('.flying-dart')
 const staticDartsDiv = document.querySelectorAll('.dart')
-// const congrats = document.querySelector('.congrats')
 const helpInfoDiv = document.getElementById('help-info')
 const gameStatusDiv = document.getElementById('game-status')
 

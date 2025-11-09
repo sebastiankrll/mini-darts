@@ -9,10 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=s" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/darts.css">
+    <link rel="stylesheet" href="css/header.css">
 </head>
 <body>
     <section>
         <div id="menu">
+            <?php include('components/header.php'); ?>
             <div id="help-info">
                 <ol>
                     <li>Hold down the left mouse button to pick up a dart.</li>
@@ -69,5 +71,6 @@
         </div>
     </section>
     <script src="js/darts.js"></script>
+    <script src="js/header.js"></script>
 </body>
 </html>
