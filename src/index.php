@@ -17,7 +17,7 @@
             <div class="menu-setting" onclick="fullscreen()">Fullscreen</div>
         </div>
         <div class="menu-settings">
-            <div class="menu-setting" onclick="scoreMode()">301</div>
+            <div class="menu-setting" onclick="changeScoreMode(this)">301</div>
             <div class="menu-setting" onclick="playerMode()">Player(s)</div>
             <div class="menu-setting" onclick="gameMode()">Single Out</div>
         </div>  

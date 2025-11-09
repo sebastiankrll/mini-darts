@@ -339,13 +339,10 @@ function toggleFullscreen() {
     }
 }
 
-function changeScoreMode() {
-    scoreModeToggle.innerHTML = scoreModes[scoreIdx];
-    restartGame();
-    scoreIdx++;
-    if (scoreIdx > 2) {
-        scoreIdx = 0;
-    }
+const changeScoreMode = (element) => {
+    scoreModeIndex = (scoreModeIndex + 1) % 3
+    element.innerHTML = scoreModes[scoreModeIndex]
+    restartGame()
 }
 
 var gameModeToggle = document.querySelector('.game-mode');
