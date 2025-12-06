@@ -52,6 +52,14 @@ const dartUp = () => {
         staticDartsDiv[currentRound].style.visibility = "hidden"
         cursorDiv.style.display = "none"
         flyingDartsDiv[currentRound].style.display = 'block'
+
+        if (Math.abs(throwSpeedY) <= 1) {
+            throwSpeedY = 0
+        }
+        if (Math.abs(throwSpeedX) <= 1) {
+            throwSpeedX = 0
+        }
+
         animateDart()
     }
 }
@@ -59,27 +67,30 @@ const dartUp = () => {
 const animateDart = () => {
     let _animationInterval = null
     let _i = 0
+    let x, y
     const _dartOffsets = [[1, 22], [2, 23], [2, 23], [2, 20], [10, -24]]
     const _dartScales = [15, 12, 9, 6, 3];
+    const speedFactor = 10
 
     const animateFrame = () => {
         if (_i == 50) {
             clearInterval(_animationInterval)
 
-            flyingDartsDiv[currentRound].style.top = throwY + _dartOffsets[4][1] + 'px'
-            flyingDartsDiv[currentRound].style.left = throwX + _dartOffsets[4][0] + 'px'
+            flyingDartsDiv[currentRound].style.top = y + _dartOffsets[4][1] + 'px'
+            flyingDartsDiv[currentRound].style.left = x + _dartOffsets[4][0] + 'px'
             flyingDartsDiv[currentRound].style.backgroundImage = 'url(../images/darts/dart_5.png)'
             flyingDartsDiv[currentRound].style.width = _dartScales[4] + 'rem'
 
-            getThrow()
+            getThrow(x, y)
         } else {
-            throwY += throwSpeedY * _i / 100 * Math.sin(0.8) + 10 / 2 * Math.pow(_i / 35, 2)
-            throwX += throwSpeedX * _i / 100
+            // y = throwY - (throwSpeedY === 0 ? -20 : throwSpeedY / speedFactor) * _i * Math.sin(0.8) + 10 / 2 * Math.pow(_i / 35, 2)
+            y=throwY
+            x = throwX + throwSpeedX * _i / speedFactor
 
             let idx = Math.floor(_i / (50 / 4))
 
-            flyingDartsDiv[currentRound].style.top = throwY + _dartOffsets[idx][1] + 'px'
-            flyingDartsDiv[currentRound].style.left = throwX + _dartOffsets[idx][0] + 'px'
+            flyingDartsDiv[currentRound].style.top = y + _dartOffsets[idx][1] + 'px'
+            flyingDartsDiv[currentRound].style.left = x + _dartOffsets[idx][0] + 'px'
             flyingDartsDiv[currentRound].style.backgroundImage = 'url(../images/darts/dart_' + (idx + 1) + '.png)'
             flyingDartsDiv[currentRound].style.width = _dartScales[_i] + 'rem'
 
@@ -90,7 +101,7 @@ const animateDart = () => {
     _animationInterval = setInterval(animateFrame, 10)
 }
 
-const calculateThrownValue = () => {
+const calculateThrownValue = (x, y) => {
     const _cx = 0.5
     const _cy = 0.5
     const _cr = 0.402
@@ -102,8 +113,8 @@ const calculateThrownValue = () => {
     const _bullr = 0.119
     const _scoreOrder = [6, 13, 4, 18, 1, 20, 5, 12, 9, 14, 11, 8, 16, 7, 19, 3, 17, 2, 15, 10]
 
-    const _x = throwX / dartboardDiv.offsetWidth - _cx
-    const _y = -(throwY / dartboardDiv.offsetHeight - _cy)
+    const _x = x / dartboardDiv.offsetWidth - _cx
+    const _y = -(y / dartboardDiv.offsetHeight - _cy)
     let _phi = Math.atan(_y / _x) * 180 / Math.PI
 
     if (_x < 0) { _phi += 180 }
@@ -121,7 +132,7 @@ const calculateThrownValue = () => {
     }
     if (_r > _dr_min && _r < _dr_max) {
         return {
-            value: _scoreOrder[_idx] * 3,
+            value: _scoreOrder[_idx] * 2,
             isDouble: true
         }
     }
@@ -150,8 +161,8 @@ const calculateThrownValue = () => {
     }
 }
 
-const getThrow = () => {
-    const _throw = calculateThrownValue()
+const getThrow = (x, y) => {
+    const _throw = calculateThrownValue(x, y)
 
     counterScoresDiv[currentRound].innerHTML = _throw.value
     throwSum += _throw.value
@@ -191,7 +202,6 @@ const getThrow = () => {
     currentRound++
     if (currentRound > 2) {
         scores[currentPlayer] = tempScore
-        console.log(throws)
         roundTimeout = setTimeout(advanceRound, 2000)
     } else {
         throwStatus = false
