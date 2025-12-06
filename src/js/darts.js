@@ -83,8 +83,8 @@ const animateDart = () => {
 
             getThrow(x, y)
         } else {
-            // y = throwY - (throwSpeedY === 0 ? -20 : throwSpeedY / speedFactor) * _i * Math.sin(0.8) + 10 / 2 * Math.pow(_i / 35, 2)
-            y=throwY
+            y = throwY - (throwSpeedY === 0 ? -20 : throwSpeedY / speedFactor) * _i * Math.sin(0.8) + 10 / 2 * Math.pow(_i / 35, 2)
+            // y=throwY
             x = throwX + throwSpeedX * _i / speedFactor
 
             let idx = Math.floor(_i / (50 / 4))
